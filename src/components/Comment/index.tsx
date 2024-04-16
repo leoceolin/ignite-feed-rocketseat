@@ -3,10 +3,18 @@ import styles from './Comment.module.css'
 
 import { ThumbsUp, Trash } from 'phosphor-react'
 
-export function Comment() {
+interface IComment {
+  content: string
+  onDeleteComment: (comment: string) => void
+}
+export function Comment({ content, onDeleteComment }: IComment) {
+  function handleDeleteComment() {
+    onDeleteComment(content)
+  }
+
   return (
     <div className={styles.comment}>
-      <Avatar hasBorder={false} src="https://github.com/leoceolin.png" />
+      <Avatar hasBorder={false} src="https://github.com/leoceolin.png" alt="" />
 
       <div className={styles.commentBox}>
         <div className={styles.commentContent}>
@@ -18,12 +26,12 @@ export function Comment() {
               </time>
             </div>
 
-            <button title="Deletar comentário">
-              <Trash size={20} />
+            <button onClick={handleDeleteComment} title="Deletar comentário">
+              <Trash size={24} />
             </button>
           </header>
 
-          <p>Muito bom Devon, parabéns!! 👏👏</p>
+          <p>{content}</p>
         </div>
 
         <footer>

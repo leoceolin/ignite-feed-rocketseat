@@ -12,7 +12,7 @@ const posts = [
     author: {
       avatarUrl: 'https://github.com/leoceolin.png',
       name: 'Leonel Farias',
-      role: 'CTO @Rocketseat',
+      role: 'Frontend engineer',
     },
     content: [
       { type: 'paragraph', content: 'Fala galera 👋' },

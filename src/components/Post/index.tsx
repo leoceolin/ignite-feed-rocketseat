@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale/pt-BR'
 import { Avatar } from '../Avatar'
@@ -15,11 +16,12 @@ type Author = {
   role: string
 }
 interface IPost {
+  id: number
   author: Author
   content: Content[]
   publishedAt: Date
 }
-export function Post({ author, content, publishedAt }: IPost) {
+export function Post({ id, author, content, publishedAt }: IPost) {
   const publishedDateFormatted = format(
     publishedAt,
     "d 'de' LLLL 'às' HH:mm'h'",
@@ -33,8 +35,29 @@ export function Post({ author, content, publishedAt }: IPost) {
     addSuffix: true,
   })
 
+  const [comments, setComments] = useState([])
+
+  const [newCommentText, setNewCommentText] = useState('')
+
+  function handleCrateNewComment() {
+    event.preventDefault()
+
+    setComments([...comments, newCommentText])
+    setNewCommentText('')
+  }
+  function handleNewCommentChange() {
+    setNewCommentText(event.target.value)
+  }
+
+  function deleteComment(commentToDelete) {
+    const commentsWithoutDeletedOne = comments.filter((comment) => {
+      return comment !== commentToDelete
+    })
+
+    setComments(commentsWithoutDeletedOne)
+  }
   return (
-    <article className={styles.post}>
+    <article className={styles.post} key={id}>
       <header>
         <div className={styles.author}>
           <Avatar hasBorder={false} src={author.avatarUrl} />
@@ -55,10 +78,10 @@ export function Post({ author, content, publishedAt }: IPost) {
       <div className={styles.content}>
         {content.map((line) => {
           if (line.type === 'paragraph') {
-            return <p>{line.content}</p>
+            return <p key={line.content}>{line.content}</p>
           } else if (line.type === 'link') {
             return (
-              <p>
+              <p key={line.content}>
                 <a href="#">{line.content}</a>
               </p>
             )
@@ -66,10 +89,15 @@ export function Post({ author, content, publishedAt }: IPost) {
         })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCrateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
-        <textarea placeholder="Deixe um comentário" />
+        <textarea
+          name="comment"
+          placeholder="Deixe um comentário"
+          value={newCommentText}
+          onChange={handleNewCommentChange}
+        />
 
         <footer>
           <button type="submit">Publicar</button>
@@ -77,9 +105,15 @@ export function Post({ author, content, publishedAt }: IPost) {
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.map((comment) => {
+          return (
+            <Comment
+              key={comment}
+              content={comment}
+              onDeleteComment={deleteComment}
+            />
+          )
+        })}
       </div>
     </article>
   )
