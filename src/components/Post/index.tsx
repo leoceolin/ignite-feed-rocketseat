@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { FormEvent, useState, ChangeEvent, InvalidEvent } from 'react'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale/pt-BR'
 import { Avatar } from '../Avatar'
@@ -16,12 +16,12 @@ type Author = {
   role: string
 }
 interface IPost {
-  id: number
+  key: number
   author: Author
   content: Content[]
   publishedAt: Date
 }
-export function Post({ id, author, content, publishedAt }: IPost) {
+export function Post({ key, author, content, publishedAt }: IPost) {
   const publishedDateFormatted = format(
     publishedAt,
     "d 'de' LLLL 'às' HH:mm'h'",
@@ -35,22 +35,22 @@ export function Post({ id, author, content, publishedAt }: IPost) {
     addSuffix: true,
   })
 
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState([''])
 
   const [newCommentText, setNewCommentText] = useState('')
 
-  function handleCrateNewComment() {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault()
 
     setComments([...comments, newCommentText])
     setNewCommentText('')
   }
-  function handleNewCommentChange() {
+  function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
   }
 
-  function deleteComment(commentToDelete) {
+  function deleteComment(commentToDelete: string) {
     const commentsWithoutDeletedOne = comments.filter((comment) => {
       return comment !== commentToDelete
     })
@@ -58,14 +58,14 @@ export function Post({ id, author, content, publishedAt }: IPost) {
     setComments(commentsWithoutDeletedOne)
   }
 
-  function handleNewCommentInvalid() {
+  function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('Esse campo é obrigatório!')
   }
 
   const isNewCommentEmpty = newCommentText.length === 0
 
   return (
-    <article className={styles.post} key={id}>
+    <article className={styles.post} key={key}>
       <header>
         <div className={styles.author}>
           <Avatar hasBorder={false} src={author.avatarUrl} />
@@ -97,7 +97,7 @@ export function Post({ id, author, content, publishedAt }: IPost) {
         })}
       </div>
 
-      <form onSubmit={handleCrateNewComment} className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
         <textarea
