@@ -5,12 +5,12 @@ import { Avatar } from '../Avatar'
 import { Comment } from '../Comment'
 import styles from './Post.module.css'
 
-type Content = {
-  type: string
+interface Content {
+  type: 'paragraph' | 'link'
   content: string
 }
 
-type Author = {
+interface Author {
   avatarUrl: string
   name: string
   role: string
